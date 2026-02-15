@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星降る夜の約束 - イヨリ攻略ビジュアルノベル</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+
+        /* 背景スタイル定義 */
+        .bg-pokemon-center {
+            background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
+            position: relative;
+        }
+
+        .bg-pokemon-center::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 80%;
+            height: 60%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+        }
+
+        .bg-enju-city {
+            background: linear-gradient(to bottom, #2c3e50 0%, #4ca1af 100%);
+            position: relative;
+        }
+
+        .bg-enju-city::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30%;
+            background:
+                linear-gradient(to right, transparent 49%, rgba(255, 255, 255, 0.1) 50%, transparent 51%),
+                linear-gradient(to top, #000 0%, transparent 100%);
+            background-size: 50px 100%, 100% 100%;
+        }
+
+        .bg-observatory {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+        }
+
+        .bg-starry-night {
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 星空アニメーション */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: var(--opacity);
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.2;
+                transform: scale(0.5);
+            }
+        }
+
+        #characters {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 2;
+        }
+
+        .character {
+            max-height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+        }
+
+        .character.active {
+            opacity: 1;
+        }
+
+        #text-box {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+            backdrop-filter: blur(10px);
+            padding: 30px 50px;
+            z-index: 3;
+            border-top: 3px solid rgba(147, 112, 219, 0.5);
+        }
+
+        #speaker-name {
+            font-size: 1.4rem;
+            color: #9370db;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
+        }
+
+        #dialogue-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        #choices {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .choice-button {
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.8), rgba(106, 90, 205, 0.8));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 20px 30px;
+            font-size: 1.1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Noto Serif JP', serif;
+            text-align: left;
+        }
+
+        .choice-button:hover {
+            background: linear-gradient(135deg, rgba(147, 112, 219, 1), rgba(106, 90, 205, 1));
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(147, 112, 219, 0.5);
+        }
+
+        #affection-meter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid rgba(147, 112, 219, 0.5);
+            z-index: 5;
+        }
+
+        #affection-label {
+            font-size: 0.9rem;
+            color: #9370db;
+            margin-bottom: 5px;
+        }
+
+        #affection-bar-container {
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #affection-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff69b4, #ff1493);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+        }
+
+        #affection-value {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: center;
+            color: #fff;
+        }
+
+        #title-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            text-align: center;
+        }
+
+        #game-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #9370db, #ff69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(147, 112, 219, 0.5);
+        }
+
+        #game-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 50px;
+        }
+
+        #start-button {
+            background: linear-gradient(135deg, #9370db, #6a5acd);
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Noto Serif JP', serif;
+        }
+
+        #start-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 40px rgba(147, 112, 219, 0.8);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* エンディング用スタイル */
+        .ending-mode #text-box {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            /* 左半分にテキスト表示 */
+            right: auto;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+            backdrop-filter: none;
+            /* ボカシ解除 */
+            border-top: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 80px;
+        }
+
+        .ending-mode #dialogue-text {
+            font-size: 1.1rem;
+            text-shadow: 2px 2px 4px black;
+        }
+
+        .ending-mode #speaker-name {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        #next-button {
+            position: absolute;
+            bottom: 30px;
+            right: 50px;
+            background: rgba(147, 112, 219, 0.3);
+            border: 2px solid rgba(147, 112, 219, 0.8);
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Noto Serif JP', serif;
+            z-index: 3;
+            transition: all 0.3s ease;
+        }
+
+        #next-button:hover {
+            background: rgba(147, 112, 219, 0.6);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- タイトル画面 -->
+        <div id="title-screen">
+            <h1 id="game-title">星降る夜の約束</h1>
+            <p id="game-subtitle">～冬空に咲く、ふたりの物語～</p>
+            <button id="start-button">GAME START</button>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div id="background"></div>
+
+        <div id="characters">
+            <img id="char-iyori" class="character" src="" alt="イヨリ">
+            <img id="char-matsuba" class="character" src="" alt="マツバ">
+        </div>
+
+        <div id="affection-meter">
+            <div id="affection-label">💕 イヨリの好感度</div>
+            <div id="affection-bar-container">
+                <div id="affection-bar" style="width: 50%;"></div>
+            </div>
+            <div id="affection-value">50 / 100</div>
+        </div>
+
+        <div id="text-box">
+            <div id="speaker-name"></div>
+            <div id="dialogue-text"></div>
+            <button id="next-button">▼</button>
+        </div>
+
+        <div id="choices"></div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
